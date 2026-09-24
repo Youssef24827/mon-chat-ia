@@ -1,100 +1,59 @@
-const form = document.getElementById("chat-form");
-const input = document.getElementById("message-input");
-const messagesContainer = document.getElementById("messages");
-const welcome = document.getElementById("welcome");
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-let conversationId = localStorage.getItem("conversation_id");
+  <title>Mon IA</title>
 
-if (!conversationId) {
-  conversationId = crypto.randomUUID();
-  localStorage.setItem("conversation_id", conversationId);
-}
+  <link rel="stylesheet" href="style.css">
+</head>
 
-function addMessage(message, sender) {
-  const div = document.createElement("div");
+<body>
 
-  div.className = sender === "user"
-    ? "message user-message"
-    : "message assistant-message";
+  <div class="app">
 
-  div.textContent = message;
+    <header class="topbar">
+      <div class="logo">✦ Mon IA</div>
+      <div class="status">● En ligne</div>
+    </header>
 
-  messagesContainer.appendChild(div);
-}
+    <main class="chat">
 
-async function sendMessage(message) {
-  try {
-    const response = await fetch("/api/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        conversation_id: conversationId,
-        sender: "user",
-        message: message
-      })
-    });
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">✦</div>
 
-    const data = await response.json();
+        <h1>Comment puis-je vous aider ?</h1>
 
-    if (!response.ok) {
-      console.error("Erreur API :", data);
-      return;
-    }
+        <p>
+          Écrivez votre message ci-dessous.
+        </p>
+      </div>
 
-    console.log("Message enregistré :", data);
+      <div id="messages"></div>
 
-  } catch (error) {
-    console.error("Erreur :", error);
-  }
-}
+    </main>
 
-async function loadMessages() {
-  try {
-    const response = await fetch(
-      `/api/messages?conversation_id=${encodeURIComponent(conversationId)}`
-    );
+    <form id="chat-form" class="input-area">
 
-    if (!response.ok) return;
+      <input
+        id="message-input"
+        type="text"
+        placeholder="Écrivez votre message..."
+        autocomplete="off"
+        required
+      >
 
-    const messages = await response.json();
+      <button type="submit">
+        ➤
+      </button>
 
-    messagesContainer.innerHTML = "";
+    </form>
 
-    if (messages.length > 0) {
-      welcome.style.display = "none";
-    }
+  </div>
 
-    messages.forEach((message) => {
-      addMessage(message.message, message.sender);
-    });
+  <!-- Le JavaScript est dans un fichier séparé -->
+  <script src="./script.js"></script>
 
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-  } catch (error) {
-    console.error("Erreur chargement :", error);
-  }
-}
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const message = input.value.trim();
-
-  if (!message) return;
-
-  input.value = "";
-
-  welcome.style.display = "none";
-
-  addMessage(message, "user");
-
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-  await sendMessage(message);
-});
-
-loadMessages();
-
-setInterval(loadMessages, 3000);
+</body>
+</html>
