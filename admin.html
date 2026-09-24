@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Admin - Mon IA</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f8;
+      color: #202123;
+    }
+
+    .admin {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* LISTE DES CONVERSATIONS */
+
+    .sidebar {
+      width: 280px;
+      background: #202123;
+      color: white;
+      padding: 20px;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 25px;
+    }
+
+    .conversation {
+      padding: 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-bottom: 8px;
+      background: #343541;
+    }
+
+    .conversation:hover {
+      background: #444654;
+    }
+
+    /* ZONE PRINCIPALE */
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      height: 65px;
+      background: white;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      padding: 0 25px;
+      font-weight: bold;
+    }
+
+    .messages {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .message {
+      margin-bottom: 25px;
+    }
+
+    .message-user {
+      text-align: left;
+    }
+
+    .message-admin {
+      text-align: right;
+    }
+
+    .bubble {
+      display: inline-block;
+      padding: 13px 17px;
+      border-radius: 15px;
+      max-width: 70%;
+      text-align: left;
+      white-space: pre-wrap;
+    }
+
+    .message-user .bubble {
+      background: white;
+      border: 1px solid #ddd;
+    }
+
+    .message-admin .bubble {
+      background: #111;
+      color: white;
+    }
+
+    /* RÉPONSE */
+
+    .reply {
+      background: white;
+      border-top: 1px solid #ddd;
+      padding: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .reply textarea {
+      flex: 1;
+      height: 55px;
+      resize: none;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 15px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .reply button {
+      border: none;
+      border-radius: 12px;
+      padding: 0 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .send {
+      background: #111;
+      color: white;
+    }
+
+    .ai {
+      background: #e9e9e9;
+      color: #111;
+    }
+
+    .reply button:hover {
+      opacity: 0.8;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="admin">
+
+    <aside class="sidebar">
+
+      <h2>⚙️ Administration</h2>
+
+      <div class="conversation">
+        👤 Utilisateur #001
+      </div>
+
+      <div class="conversation">
+        👤 Utilisateur #002
+      </div>
+
+    </aside>
+
+    <main class="main">
+
+      <header class="header">
+        Conversation avec Utilisateur #001
+      </header>
+
+      <section class="messages">
+
+        <div class="message message-user">
+          <div class="bubble">
+            Bonjour, j'ai une question.
+          </div>
+        </div>
+
+        <div class="message message-admin">
+          <div class="bubble">
+            Bonjour ! Bien sûr, je vous écoute.
+          </div>
+        </div>
+
+      </section>
+
+      <form class="reply">
+
+        <textarea
+          id="reply"
+          placeholder="Écrire une réponse..."
+        ></textarea>
+
+        <button
+          type="button"
+          class="ai"
+          onclick="generateAI()"
+        >
+          🤖 Réponse IA
+        </button>
+
+        <button
+          type="button"
+          class="send"
+          onclick="sendReply()"
+        >
+          Envoyer
+        </button>
+
+      </form>
+
+    </main>
+
+  </div>
+
+  <script>
+
+    async function generateAI() {
+
+      const textarea = document.getElementById("reply");
+
+      textarea.value = "Génération de la réponse...";
+
+      try {
+
+        const response = await fetch("/api/gemini", {
+
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            message:
+              "Réponds poliment à cet utilisateur : Bonjour, j'ai une question."
+          })
+
+        });
+
+        const data = await response.json();
+
+        if (data.answer) {
+          textarea.value = data.answer;
+        } else {
+          textarea.value = "Erreur lors de la génération.";
+        }
+
+      } catch (error) {
+
+        textarea.value = "Erreur de connexion à Gemini.";
+
+      }
+
+    }
+
+    function sendReply() {
+
+      const textarea = document.getElementById("reply");
+
+      const text = textarea.value.trim();
+
+      if (!text) return;
+
+      alert("Réponse envoyée : " + text);
+
+      textarea.value = "";
+
+    }
+
+  </script>
+
+</body>
+
+</html>
