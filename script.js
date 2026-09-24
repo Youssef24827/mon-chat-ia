@@ -1,74 +1,84 @@
-const form = document.getElementById("chat-form");
-const input = document.getElementById("message-input");
-const messages = document.getElementById("messages");
-const welcome = document.getElementById("welcome");
+const chat = document.getElementById("chat");
+const input = document.getElementById("messageInput");
+const sendButton = document.getElementById("sendButton");
 
-const conversationId =
-  localStorage.getItem("conversation_id") ||
-  crypto.randomUUID();
+let conversationId = localStorage.getItem("conversation_id");
 
-localStorage.setItem("conversation_id", conversationId);
+if (!conversationId) {
+  conversationId = crypto.randomUUID();
+  localStorage.setItem("conversation_id", conversationId);
+}
 
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
+async function loadMessages() {
+  try {
+    const response = await fetch(
+      `/api/messages?conversation_id=${encodeURIComponent(conversationId)}`
+    );
 
-  const text = input.value.trim();
+    if (!response.ok) return;
 
-  if (!text) return;
+    const messages = await response.json();
 
-  input.disabled = true;
+    chat.innerHTML = "";
 
-  welcome.style.display = "none";
+    messages.forEach((msg) => {
+      addMessage(msg.message, msg.sender);
+    });
 
-  addMessage(text, "user");
+    chat.scrollTop = chat.scrollHeight;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function addMessage(message, sender) {
+  const div = document.createElement("div");
+
+  div.className =
+    sender === "user"
+      ? "message user"
+      : "message assistant";
+
+  div.textContent = message;
+
+  chat.appendChild(div);
+}
+
+async function sendMessage() {
+  const message = input.value.trim();
+
+  if (!message) return;
 
   input.value = "";
 
+  addMessage(message, "user");
+  chat.scrollTop = chat.scrollHeight;
+
   try {
-    const response = await fetch("/api/messages", {
+    await fetch("/api/messages", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        conversationId,
+        conversation_id: conversationId,
         sender: "user",
-        message: text
+        message
       })
     });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || "Erreur");
-    }
-
   } catch (error) {
     console.error(error);
-
-    addMessage(
-      "Impossible d'envoyer le message pour le moment.",
-      "admin"
-    );
   }
+}
 
-  input.disabled = false;
-  input.focus();
+sendButton.addEventListener("click", sendMessage);
+
+input.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
 });
 
-function addMessage(text, type) {
-  const message = document.createElement("div");
-  message.className = `message ${type}`;
+loadMessages();
 
-  const content = document.createElement("div");
-  content.className = "message-content";
-  content.textContent = text;
-
-  message.appendChild(content);
-  messages.appendChild(message);
-
-  message.scrollIntoView({
-    behavior: "smooth",
-    block: "end"
-  });
-}
+setInterval(loadMessages, 3000);
