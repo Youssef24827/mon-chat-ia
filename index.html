@@ -1,44 +1,100 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mon IA</title>
-  <link rel="stylesheet" href="style.css">
-</head>
+const form = document.getElementById("chat-form");
+const input = document.getElementById("message-input");
+const messagesContainer = document.getElementById("messages");
+const welcome = document.getElementById("welcome");
 
-<body>
-  <div class="app">
+let conversationId = localStorage.getItem("conversation_id");
 
-    <header class="topbar">
-      <div class="logo">✦ Mon IA</div>
-      <div class="status">● En ligne</div>
-    </header>
+if (!conversationId) {
+  conversationId = crypto.randomUUID();
+  localStorage.setItem("conversation_id", conversationId);
+}
 
-    <main class="chat">
-      <div class="welcome" id="welcome">
-        <div class="welcome-icon">✦</div>
-        <h1>Comment puis-je vous aider ?</h1>
-        <p>Écrivez votre message ci-dessous.</p>
-      </div>
+function addMessage(message, sender) {
+  const div = document.createElement("div");
 
-      <div id="messages"></div>
-    </main>
+  div.className = sender === "user"
+    ? "message user-message"
+    : "message assistant-message";
 
-    <form id="chat-form" class="input-area">
-      <input
-        id="message-input"
-        type="text"
-        placeholder="Écrivez votre message..."
-        autocomplete="off"
-        required
-      >
+  div.textContent = message;
 
-      <button type="submit">➤</button>
-    </form>
+  messagesContainer.appendChild(div);
+}
 
-  </div>
+async function sendMessage(message) {
+  try {
+    const response = await fetch("/api/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        conversation_id: conversationId,
+        sender: "user",
+        message: message
+      })
+    });
 
-  <script src="script.js"></script>
-</body>
-</html>
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Erreur API :", data);
+      return;
+    }
+
+    console.log("Message enregistré :", data);
+
+  } catch (error) {
+    console.error("Erreur :", error);
+  }
+}
+
+async function loadMessages() {
+  try {
+    const response = await fetch(
+      `/api/messages?conversation_id=${encodeURIComponent(conversationId)}`
+    );
+
+    if (!response.ok) return;
+
+    const messages = await response.json();
+
+    messagesContainer.innerHTML = "";
+
+    if (messages.length > 0) {
+      welcome.style.display = "none";
+    }
+
+    messages.forEach((message) => {
+      addMessage(message.message, message.sender);
+    });
+
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+  } catch (error) {
+    console.error("Erreur chargement :", error);
+  }
+}
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const message = input.value.trim();
+
+  if (!message) return;
+
+  input.value = "";
+
+  welcome.style.display = "none";
+
+  addMessage(message, "user");
+
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+  await sendMessage(message);
+});
+
+loadMessages();
+
+setInterval(loadMessages, 3000);
