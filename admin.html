@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Admin - Mon IA</title>
+  <title>Administration - Mon IA</title>
 
   <style>
     * {
@@ -25,13 +25,12 @@
       height: 100vh;
     }
 
-    /* LISTE DES CONVERSATIONS */
-
     .sidebar {
       width: 280px;
       background: #202123;
       color: white;
       padding: 20px;
+      overflow-y: auto;
     }
 
     .sidebar h2 {
@@ -50,7 +49,15 @@
       background: #444654;
     }
 
-    /* ZONE PRINCIPALE */
+    .conversation.active {
+      background: #555766;
+    }
+
+    .empty {
+      color: #aaa;
+      font-size: 14px;
+      line-height: 1.5;
+    }
 
     .main {
       flex: 1;
@@ -105,7 +112,11 @@
       color: white;
     }
 
-    /* RÉPONSE */
+    .empty-messages {
+      color: #777;
+      text-align: center;
+      margin-top: 100px;
+    }
 
     .reply {
       background: white;
@@ -145,138 +156,327 @@
     }
 
     .reply button:hover {
-      opacity: 0.8;
+      opacity: .8;
     }
   </style>
-
 </head>
 
 <body>
 
-  <div class="admin">
+<div class="admin">
 
-    <aside class="sidebar">
+  <aside class="sidebar">
 
-      <h2>⚙️ Administration</h2>
+    <h2>⚙️ Administration</h2>
 
-      <div class="conversation">
-        👤 Utilisateur #001
+    <div id="conversations">
+      <div class="empty">
+        Chargement des conversations...
+      </div>
+    </div>
+
+  </aside>
+
+  <main class="main">
+
+    <header class="header" id="header">
+      Aucune conversation sélectionnée
+    </header>
+
+    <section class="messages" id="messages">
+
+      <div class="empty-messages">
+        Sélectionne une conversation.
       </div>
 
-      <div class="conversation">
-        👤 Utilisateur #002
-      </div>
+    </section>
 
-    </aside>
+    <form class="reply" id="reply-form">
 
-    <main class="main">
+      <textarea
+        id="reply"
+        placeholder="Écrire une réponse..."
+        disabled
+      ></textarea>
 
-      <header class="header">
-        Conversation avec Utilisateur #001
-      </header>
+      <button
+        type="button"
+        class="ai"
+        id="ai-button"
+        disabled
+      >
+        🤖 Réponse IA
+      </button>
 
-      <section class="messages">
+      <button
+        type="submit"
+        class="send"
+        disabled
+      >
+        Envoyer
+      </button>
 
-        <div class="message message-user">
-          <div class="bubble">
-            Bonjour, j'ai une question.
-          </div>
-        </div>
+    </form>
 
-        <div class="message message-admin">
-          <div class="bubble">
-            Bonjour ! Bien sûr, je vous écoute.
-          </div>
-        </div>
+  </main>
 
-      </section>
+</div>
 
-      <form class="reply">
+<script>
 
-        <textarea
-          id="reply"
-          placeholder="Écrire une réponse..."
-        ></textarea>
+let selectedConversation = null;
+let conversations = {};
 
-        <button
-          type="button"
-          class="ai"
-          onclick="generateAI()"
-        >
-          🤖 Réponse IA
-        </button>
+const conversationsContainer =
+  document.getElementById("conversations");
 
-        <button
-          type="button"
-          class="send"
-          onclick="sendReply()"
-        >
-          Envoyer
-        </button>
+const messagesContainer =
+  document.getElementById("messages");
 
-      </form>
+const header =
+  document.getElementById("header");
 
-    </main>
+const reply =
+  document.getElementById("reply");
 
-  </div>
+const replyForm =
+  document.getElementById("reply-form");
 
-  <script>
+const aiButton =
+  document.getElementById("ai-button");
 
-    async function generateAI() {
+async function loadMessages() {
 
-      const textarea = document.getElementById("reply");
+  try {
 
-      textarea.value = "Génération de la réponse...";
+    const response = await fetch("/api/admin-messages");
 
-      try {
+    const data = await response.json();
 
-        const response = await fetch("/api/gemini", {
+    if (!response.ok) {
+      throw new Error(data.error);
+    }
 
-          method: "POST",
+    conversations = {};
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+    data.messages.forEach(message => {
 
-          body: JSON.stringify({
-            message:
-              "Réponds poliment à cet utilisateur : Bonjour, j'ai une question."
-          })
-
-        });
-
-        const data = await response.json();
-
-        if (data.answer) {
-          textarea.value = data.answer;
-        } else {
-          textarea.value = "Erreur lors de la génération.";
-        }
-
-      } catch (error) {
-
-        textarea.value = "Erreur de connexion à Gemini.";
-
+      if (!conversations[message.conversation_id]) {
+        conversations[message.conversation_id] = [];
       }
 
+      conversations[message.conversation_id].push(message);
+
+    });
+
+    renderConversations();
+
+  } catch (error) {
+
+    console.error(error);
+
+    conversationsContainer.innerHTML =
+      `<div class="empty">
+        Erreur lors du chargement.
+      </div>`;
+
+  }
+
+}
+
+function renderConversations() {
+
+  conversationsContainer.innerHTML = "";
+
+  const ids = Object.keys(conversations);
+
+  if (ids.length === 0) {
+
+    conversationsContainer.innerHTML =
+      `<div class="empty">
+        Aucun message pour le moment.
+      </div>`;
+
+    return;
+  }
+
+  ids.forEach(id => {
+
+    const div = document.createElement("div");
+
+    div.className = "conversation";
+
+    div.textContent =
+      "👤 " + id.substring(0, 8);
+
+    div.onclick = () => {
+      selectConversation(id);
+    };
+
+    conversationsContainer.appendChild(div);
+
+  });
+
+}
+
+function selectConversation(id) {
+
+  selectedConversation = id;
+
+  const messages =
+    conversations[id] || [];
+
+  header.textContent =
+    "Conversation avec " + id.substring(0, 8);
+
+  messagesContainer.innerHTML = "";
+
+  messages.forEach(message => {
+
+    const wrapper =
+      document.createElement("div");
+
+    wrapper.className =
+      message.sender === "user"
+        ? "message message-user"
+        : "message message-admin";
+
+    const bubble =
+      document.createElement("div");
+
+    bubble.className = "bubble";
+
+    bubble.textContent = message.message;
+
+    wrapper.appendChild(bubble);
+
+    messagesContainer.appendChild(wrapper);
+
+  });
+
+  reply.disabled = false;
+  aiButton.disabled = false;
+
+  replyForm.querySelector(".send").disabled = false;
+
+  messagesContainer.scrollTop =
+    messagesContainer.scrollHeight;
+
+}
+
+aiButton.addEventListener("click", async () => {
+
+  if (!selectedConversation) return;
+
+  const conversation =
+    conversations[selectedConversation] || [];
+
+  const lastUserMessage =
+    [...conversation]
+      .reverse()
+      .find(message => message.sender === "user");
+
+  if (!lastUserMessage) return;
+
+  aiButton.disabled = true;
+  aiButton.textContent = "⏳ Génération...";
+
+  try {
+
+    const response = await fetch("/api/gemini", {
+
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        message: lastUserMessage.message
+      })
+
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error);
     }
 
-    function sendReply() {
+    reply.value = data.answer;
 
-      const textarea = document.getElementById("reply");
+  } catch (error) {
 
-      const text = textarea.value.trim();
+    console.error(error);
 
-      if (!text) return;
+    reply.value =
+      "Erreur lors de la génération de la réponse.";
 
-      alert("Réponse envoyée : " + text);
+  }
 
-      textarea.value = "";
+  aiButton.disabled = false;
+  aiButton.textContent = "🤖 Réponse IA";
 
+});
+
+replyForm.addEventListener("submit", async (event) => {
+
+  event.preventDefault();
+
+  if (!selectedConversation) return;
+
+  const text =
+    reply.value.trim();
+
+  if (!text) return;
+
+  try {
+
+    const response =
+      await fetch("/api/messages", {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          conversationId: selectedConversation,
+          sender: "admin",
+          message: text
+        })
+
+      });
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error);
     }
 
-  </script>
+    reply.value = "";
+
+    await loadMessages();
+
+    selectConversation(selectedConversation);
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Impossible d'envoyer la réponse.");
+
+  }
+
+});
+
+loadMessages();
+
+setInterval(loadMessages, 5000);
+
+</script>
 
 </body>
-
 </html>
