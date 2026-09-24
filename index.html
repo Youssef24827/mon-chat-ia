@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon IA</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <header class="topbar">
+      <div class="logo">✦ Mon IA</div>
+      <div class="status">● En ligne</div>
+    </header>
+
+    <main class="chat">
+
+      <div class="welcome">
+        <div class="welcome-icon">✦</div>
+        <h1>Comment puis-je vous aider ?</h1>
+        <p>Écrivez votre message ci-dessous.</p>
+      </div>
+
+      <div id="messages"></div>
+
+    </main>
+
+    <form id="chat-form" class="input-area">
+
+      <input
+        id="message-input"
+        type="text"
+        placeholder="Écrivez votre message..."
+        autocomplete="off"
+        required
+      >
+
+      <button type="submit">
+        ➤
+      </button>
+
+    </form>
+
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
