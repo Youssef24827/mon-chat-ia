@@ -1,26 +1,28 @@
 export default async function handler(req, res) {
   const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_ANON_KEY;
+  const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
     return res.status(500).json({
-      error: "Supabase n'est pas configuré"
+      error: "Configuration Supabase manquante"
     });
   }
 
   try {
-    // RÉCUPÉRER LES MESSAGES
+    const url = `${supabaseUrl}/rest/v1/messages`;
+
+    // GET : récupérer les messages
     if (req.method === "GET") {
       const conversationId = req.query.conversation_id;
 
-      let url =
-        `${supabaseUrl}/rest/v1/messages?select=*&order=created_at.asc`;
+      let query = "?select=*&order=created_at.asc";
 
       if (conversationId) {
-        url += `&conversation_id=eq.${encodeURIComponent(conversationId)}`;
+        query += `&conversation_id=eq.${encodeURIComponent(conversationId)}`;
       }
 
-      const response = await fetch(url, {
+      const response = await fetch(url + query, {
+        method: "GET",
         headers: {
           "apikey": supabaseKey,
           "Authorization": `Bearer ${supabaseKey}`
@@ -30,7 +32,7 @@ export default async function handler(req, res) {
       const data = await response.json();
 
       if (!response.ok) {
-        return res.status(500).json({
+        return res.status(response.status).json({
           error: data
         });
       }
@@ -38,7 +40,7 @@ export default async function handler(req, res) {
       return res.status(200).json(data);
     }
 
-    // ENREGISTRER UN MESSAGE
+    // POST : enregistrer un message
     if (req.method === "POST") {
       const {
         conversation_id,
@@ -55,38 +57,30 @@ export default async function handler(req, res) {
         });
       }
 
-      const response = await fetch(
-        `${supabaseUrl}/rest/v1/messages`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": supabaseKey,
-            "Authorization": `Bearer ${supabaseKey}`,
-            "Prefer": "return=representation"
-          },
-          body: JSON.stringify({
-            conversation_id: id,
-            sender: sender || "user",
-            message
-          })
-        }
-      );
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": supabaseKey,
+          "Authorization": `Bearer ${supabaseKey}`,
+          "Prefer": "return=representation"
+        },
+        body: JSON.stringify({
+          conversation_id: id,
+          sender: sender || "user",
+          message: message
+        })
+      });
 
       const data = await response.json();
 
       if (!response.ok) {
-        console.error(data);
-
-        return res.status(500).json({
-          error: "Impossible d'enregistrer le message"
+        return res.status(response.status).json({
+          error: data
         });
       }
 
-      return res.status(200).json({
-        success: true,
-        data
-      });
+      return res.status(200).json(data);
     }
 
     return res.status(405).json({
@@ -97,7 +91,7 @@ export default async function handler(req, res) {
     console.error(error);
 
     return res.status(500).json({
-      error: "Erreur serveur"
+      error: error.message
     });
   }
 }
