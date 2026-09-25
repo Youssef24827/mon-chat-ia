@@ -52,13 +52,11 @@ async function loadMessages() {
       `/api/messages?conversation_id=${encodeURIComponent(conversationId)}`
     );
 
-    if (!response.ok) {
-      console.error("Erreur chargement :", await response.text());
-      return;
-    }
+    if (!response.ok) return;
 
     const messages = await response.json();
 
+    // On évite de supprimer les messages déjà affichés
     messagesContainer.innerHTML = "";
 
     if (messages.length > 0) {
@@ -89,6 +87,7 @@ form.addEventListener("submit", async (event) => {
 
   welcome.style.display = "none";
 
+  // Affichage immédiat
   addMessage(message, "user");
 
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -100,6 +99,8 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
+// Chargement initial
 loadMessages();
 
+// Vérification des nouveaux messages toutes les 3 secondes
 setInterval(loadMessages, 3000);
