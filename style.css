@@ -2,342 +2,545 @@
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #ffffff;
-  color: #202123;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+
+  background:
+    radial-gradient(
+      circle at 50% 25%,
+      #071a3b 0%,
+      #031127 35%,
+      #020817 70%,
+      #01040b 100%
+    );
+
+  color: white;
 }
 
 
-/* =========================
+/* =========================================
    APPLICATION
-========================= */
+========================================= */
 
 .app {
+  width: 100%;
   height: 100vh;
+
   display: flex;
   flex-direction: column;
+
+  overflow: hidden;
 }
 
 
-/* =========================
+/* =========================================
    BARRE DU HAUT
-========================= */
+========================================= */
 
 .topbar {
-  height: 60px;
+  height: 70px;
+  min-height: 70px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  padding: 0 22px;
+  padding: 0 35px;
 
-  border-bottom: 1px solid #e5e5e5;
+  background: rgba(2, 10, 28, 0.85);
 
-  background: #ffffff;
+  border-bottom: 1px solid rgba(42, 116, 220, 0.25);
+
+  backdrop-filter: blur(12px);
 }
 
 
-/* =========================
-   LOGO
-========================= */
+/* LOGO EN HAUT À GAUCHE */
 
-.logo {
+.top-logo {
   display: flex;
   align-items: center;
 
-  gap: 10px;
+  gap: 12px;
 
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 600;
 }
 
-
-/* IMAGE DU LOGO */
-
-.logo img {
-  width: 38px;
-  height: 38px;
+.top-logo img {
+  width: 42px;
+  height: 42px;
 
   object-fit: cover;
 
   border-radius: 50%;
+
+  box-shadow:
+    0 0 15px rgba(0, 132, 255, 0.45);
 }
 
 
-/* NOM À CÔTÉ DU LOGO */
-
-.logo span {
-  font-size: 19px;
-  font-weight: 600;
-}
-
-
-/* =========================
-   STATUT EN LIGNE
-========================= */
+/* =========================================
+   STATUT
+========================================= */
 
 .status {
-  font-size: 13px;
-  color: #10a37f;
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  font-size: 15px;
+
+  color: #e9f1ff;
+}
+
+.status-dot {
+  width: 11px;
+  height: 11px;
+
+  border-radius: 50%;
+
+  background: #00e676;
+
+  box-shadow:
+    0 0 10px rgba(0, 230, 118, 0.8);
 }
 
 
-/* =========================
-   ZONE DU CHAT
-========================= */
+/* =========================================
+   ZONE CHAT
+========================================= */
 
 .chat {
   flex: 1;
 
+  width: 100%;
+  max-width: 1050px;
+
+  margin: 0 auto;
+
+  padding: 35px 25px 20px;
+
   overflow-y: auto;
 
-  padding: 30px 20px;
-
-  max-width: 900px;
-  width: 100%;
-
-  margin: 0 auto;
+  scrollbar-width: thin;
+  scrollbar-color: #214b86 transparent;
 }
 
 
-/* =========================
-   MESSAGE D'ACCUEIL
-========================= */
-
-.welcome {
-  text-align: center;
-
-  margin-top: 120px;
-
-  color: #666;
-}
-
-
-.welcome-icon {
-  font-size: 38px;
-
-  margin-bottom: 15px;
-}
-
-
-.welcome h1 {
-  margin: 0 0 10px;
-
-  font-size: 28px;
-
-  color: #202123;
-}
-
-
-.welcome p {
-  margin: 0;
-
-  font-size: 16px;
-}
-
-
-/* =========================
-   CONTENEUR DES MESSAGES
-========================= */
-
-#messages {
-  display: flex;
-  flex-direction: column;
-}
-
-
-/* =========================
-   MESSAGE
-========================= */
-
-.message {
-  max-width: 70%;
-
-  width: fit-content;
-
-  padding: 12px 16px;
-
-  margin-bottom: 12px;
-
-  border-radius: 16px;
-
-  line-height: 1.5;
-
-  font-size: 15px;
-
-  word-wrap: break-word;
-}
-
-
-/* =========================
-   MESSAGE UTILISATEUR
-   → À DROITE
-   → GRIS
-========================= */
-
-.user-message {
-  background: #e5e5e5;
-
-  margin-left: auto;
-  margin-right: 0;
-
-  color: #202123;
-
-  border-bottom-right-radius: 5px;
-}
-
-
-/* =========================
-   MESSAGE IA / ADMIN
-   → À GAUCHE
-   → VERT
-========================= */
-
-.assistant-message {
-  background: #d9fdd3;
-
-  margin-left: 0;
-  margin-right: auto;
-
-  color: #202123;
-
-  border-bottom-left-radius: 5px;
-}
-
-
-/* =========================
-   ZONE D'ÉCRITURE
-========================= */
-
-.input-area {
-  width: 100%;
-
-  max-width: 900px;
-
-  margin: 0 auto;
-
-  padding: 15px 20px 20px;
-
-  display: flex;
-
-  gap: 10px;
-
-  background: #ffffff;
-}
-
-
-/* =========================
-   CHAMP DE TEXTE
-========================= */
-
-.input-area input {
-  flex: 1;
-
-  height: 50px;
-
-  padding: 0 17px;
-
-  border: 1px solid #d9d9d9;
-
-  border-radius: 25px;
-
-  outline: none;
-
-  font-size: 15px;
-
-  background: #ffffff;
-}
-
-
-.input-area input:focus {
-  border-color: #aaa;
-}
-
-
-/* =========================
-   BOUTON ENVOYER
-========================= */
-
-.input-area button {
-  width: 50px;
-  height: 50px;
-
-  border: none;
-
-  border-radius: 50%;
-
-  background: #202123;
-
-  color: white;
-
-  font-size: 20px;
-
-  cursor: pointer;
-
-  transition: 0.2s;
-}
-
-
-.input-area button:hover {
-  background: #000000;
-
-  transform: scale(1.04);
-}
-
-
-/* =========================
-   BARRE DE DÉFILEMENT
-========================= */
+/* SCROLLBAR */
 
 .chat::-webkit-scrollbar {
   width: 7px;
 }
 
+.chat::-webkit-scrollbar-track {
+  background: transparent;
+}
 
 .chat::-webkit-scrollbar-thumb {
-  background: #d1d1d1;
+  background: #214b86;
 
   border-radius: 10px;
 }
 
 
-.chat::-webkit-scrollbar-track {
+/* =========================================
+   ACCUEIL
+========================================= */
+
+.welcome {
+  min-height: 380px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  padding-top: 30px;
+
+  transition: 0.3s;
+}
+
+
+/* LOGO CENTRAL */
+
+.welcome-logo {
+  width: 145px;
+  height: 145px;
+
+  object-fit: cover;
+
+  border-radius: 50%;
+
+  margin-bottom: 20px;
+
+  box-shadow:
+    0 0 20px rgba(0, 128, 255, 0.45),
+    0 0 50px rgba(65, 60, 255, 0.25);
+
+  animation: logoGlow 3s ease-in-out infinite;
+}
+
+
+@keyframes logoGlow {
+
+  0% {
+    transform: scale(1);
+
+    box-shadow:
+      0 0 20px rgba(0, 128, 255, 0.4),
+      0 0 50px rgba(65, 60, 255, 0.2);
+  }
+
+  50% {
+    transform: scale(1.03);
+
+    box-shadow:
+      0 0 30px rgba(0, 128, 255, 0.65),
+      0 0 70px rgba(65, 60, 255, 0.35);
+  }
+
+  100% {
+    transform: scale(1);
+
+    box-shadow:
+      0 0 20px rgba(0, 128, 255, 0.4),
+      0 0 50px rgba(65, 60, 255, 0.2);
+  }
+
+}
+
+
+/* TITRE */
+
+.welcome h1 {
+  margin: 0;
+
+  font-size: 38px;
+  font-weight: 700;
+
+  color: white;
+
+  letter-spacing: -1px;
+}
+
+
+/* SOUS-TITRE */
+
+.welcome p {
+  margin: 12px 0 0;
+
+  font-size: 20px;
+
+  color: #8ca9d6;
+}
+
+
+/* PETITE LIGNE BLEUE */
+
+.welcome-line {
+  width: 58px;
+  height: 4px;
+
+  margin-top: 22px;
+
+  border-radius: 10px;
+
+  background: #19a8ff;
+
+  box-shadow:
+    0 0 12px rgba(25, 168, 255, 0.8);
+}
+
+
+/* =========================================
+   CONTENEUR DES MESSAGES
+========================================= */
+
+#messages {
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
+
+  padding-bottom: 25px;
+}
+
+
+/* =========================================
+   BULLES
+========================================= */
+
+.message {
+  max-width: 68%;
+
+  width: fit-content;
+
+  padding: 15px 20px;
+
+  border-radius: 20px;
+
+  font-size: 16px;
+
+  line-height: 1.5;
+
+  color: #101a2d;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.25);
+
+  word-wrap: break-word;
+
+  animation: messageAppear 0.2s ease-out;
+}
+
+
+@keyframes messageAppear {
+
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+}
+
+
+/* =========================================
+   MESSAGE UTILISATEUR
+   → DROITE
+   → BLANC
+========================================= */
+
+.user-message {
+  align-self: flex-end;
+
+  margin-left: auto;
+
+  border-bottom-right-radius: 5px;
+
+  background: #ffffff;
+
+  color: #101a2d;
+}
+
+
+/* =========================================
+   MESSAGE IA
+   → GAUCHE
+   → BLANC
+========================================= */
+
+.assistant-message {
+  align-self: flex-start;
+
+  margin-right: auto;
+
+  border-bottom-left-radius: 5px;
+
+  background: #ffffff;
+
+  color: #101a2d;
+}
+
+
+/* =========================================
+   ZONE D'ÉCRITURE
+========================================= */
+
+.input-area {
+  width: 100%;
+  max-width: 1050px;
+
+  margin: 0 auto;
+
+  padding: 15px 25px 25px;
+
   background: transparent;
 }
 
 
-/* =========================
-   VERSION MOBILE
-========================= */
+/* CONTENEUR */
+
+.input-box {
+  width: 100%;
+
+  min-height: 64px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 7px 8px 7px 22px;
+
+  border: 1px solid rgba(38, 132, 255, 0.55);
+
+  border-radius: 35px;
+
+  background:
+    rgba(3, 16, 39, 0.9);
+
+  box-shadow:
+    0 0 20px rgba(0, 110, 255, 0.08),
+    inset 0 0 20px rgba(0, 50, 130, 0.08);
+
+  transition: 0.2s;
+}
+
+
+.input-box:focus-within {
+  border-color: #218cff;
+
+  box-shadow:
+    0 0 25px rgba(33, 140, 255, 0.18);
+}
+
+
+/* CHAMP */
+
+.input-box input {
+  flex: 1;
+
+  height: 50px;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: white;
+
+  font-size: 16px;
+}
+
+
+.input-box input::placeholder {
+  color: #7188ad;
+}
+
+
+/* =========================================
+   BOUTON ENVOYER
+========================================= */
+
+.send-button {
+  width: 50px;
+  height: 50px;
+
+  flex-shrink: 0;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      #1598ff,
+      #386cff
+    );
+
+  color: white;
+
+  font-size: 22px;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow:
+    0 0 15px rgba(25, 132, 255, 0.35);
+
+  transition: 0.2s;
+}
+
+
+.send-button:hover {
+  transform: scale(1.06);
+
+  box-shadow:
+    0 0 25px rgba(25, 132, 255, 0.55);
+}
+
+
+.send-button:active {
+  transform: scale(0.96);
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
 
 @media (max-width: 600px) {
 
   .topbar {
+    height: 60px;
+    min-height: 60px;
+
     padding: 0 15px;
   }
 
 
-  .logo {
-    gap: 8px;
-  }
-
-
-  .logo img {
-    width: 34px;
-    height: 34px;
-  }
-
-
-  .logo span {
+  .top-logo {
     font-size: 17px;
   }
 
 
+  .top-logo img {
+    width: 36px;
+    height: 36px;
+  }
+
+
+  .status {
+    font-size: 13px;
+  }
+
+
   .chat {
-    padding: 20px 12px;
+    padding: 20px 12px 10px;
+  }
+
+
+  .welcome {
+    min-height: 320px;
+  }
+
+
+  .welcome-logo {
+    width: 110px;
+    height: 110px;
+  }
+
+
+  .welcome h1 {
+    font-size: 30px;
+  }
+
+
+  .welcome p {
+    font-size: 17px;
   }
 
 
@@ -345,21 +548,31 @@ body {
     max-width: 85%;
 
     font-size: 15px;
-  }
 
-
-  .welcome {
-    margin-top: 80px;
-  }
-
-
-  .welcome h1 {
-    font-size: 23px;
+    padding: 13px 16px;
   }
 
 
   .input-area {
     padding: 10px 12px 15px;
+  }
+
+
+  .input-box {
+    min-height: 58px;
+
+    padding-left: 16px;
+  }
+
+
+  .input-box input {
+    font-size: 15px;
+  }
+
+
+  .send-button {
+    width: 45px;
+    height: 45px;
   }
 
 }
