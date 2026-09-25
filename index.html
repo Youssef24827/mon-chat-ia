@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,27 +14,48 @@
 
   <div class="app">
 
+    <!-- BARRE DU HAUT -->
     <header class="topbar">
-      <div class="logo">✦ Mon IA</div>
-      <div class="status">● En ligne</div>
+
+      <div class="logo">
+        <img src="./logo.png" alt="Logo">
+        <span>Mon IA</span>
+      </div>
+
+      <div class="status">
+        ● En ligne
+      </div>
+
     </header>
 
+
+    <!-- ZONE DE CHAT -->
     <main class="chat">
 
       <div class="welcome" id="welcome">
-        <div class="welcome-icon">✦</div>
 
-        <h1>Comment puis-je vous aider ?</h1>
+        <div class="welcome-icon">
+          ✦
+        </div>
+
+        <h1>
+          Comment puis-je vous aider ?
+        </h1>
 
         <p>
           Écrivez votre message ci-dessous.
         </p>
+
       </div>
 
+
+      <!-- Les messages apparaissent ici -->
       <div id="messages"></div>
 
     </main>
 
+
+    <!-- ZONE D'ÉCRITURE -->
     <form id="chat-form" class="input-area">
 
       <input
@@ -52,8 +74,9 @@
 
   </div>
 
-  <!-- Le JavaScript est dans un fichier séparé -->
+
   <script src="./script.js"></script>
 
 </body>
+
 </html>
