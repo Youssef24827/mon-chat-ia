@@ -17,39 +17,43 @@
     <!-- BARRE DU HAUT -->
     <header class="topbar">
 
-      <div class="logo">
+      <div class="top-logo">
         <img src="./logo.png" alt="Logo">
         <span>Mon IA</span>
       </div>
 
       <div class="status">
-        ● En ligne
+        <span class="status-dot"></span>
+        En ligne
       </div>
 
     </header>
 
 
-    <!-- ZONE DE CHAT -->
+    <!-- ZONE PRINCIPALE -->
     <main class="chat">
 
+      <!-- ACCUEIL -->
       <div class="welcome" id="welcome">
 
-        <div class="welcome-icon">
-          ✦
-        </div>
+        <img
+          class="welcome-logo"
+          src="./logo.png"
+          alt="Mon IA"
+        >
 
-        <h1>
-          Comment puis-je vous aider ?
-        </h1>
+        <h1>Mon IA</h1>
 
         <p>
-          Écrivez votre message ci-dessous.
+          Comment puis-je vous aider ?
         </p>
+
+        <div class="welcome-line"></div>
 
       </div>
 
 
-      <!-- Les messages apparaissent ici -->
+      <!-- MESSAGES -->
       <div id="messages"></div>
 
     </main>
@@ -58,17 +62,21 @@
     <!-- ZONE D'ÉCRITURE -->
     <form id="chat-form" class="input-area">
 
-      <input
-        id="message-input"
-        type="text"
-        placeholder="Écrivez votre message..."
-        autocomplete="off"
-        required
-      >
+      <div class="input-box">
 
-      <button type="submit">
-        ➤
-      </button>
+        <input
+          id="message-input"
+          type="text"
+          placeholder="Écrivez votre message..."
+          autocomplete="off"
+          required
+        >
+
+        <button type="submit" class="send-button">
+          ➤
+        </button>
+
+      </div>
 
     </form>
 
