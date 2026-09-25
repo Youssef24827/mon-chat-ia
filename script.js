@@ -1,6 +1,7 @@
-const chat = document.getElementById("chat");
-const input = document.getElementById("messageInput");
-const sendButton = document.getElementById("sendButton");
+const form = document.getElementById("chat-form");
+const input = document.getElementById("message-input");
+const messagesContainer = document.getElementById("messages");
+const welcome = document.getElementById("welcome");
 
 let conversationId = localStorage.getItem("conversation_id");
 
@@ -9,73 +10,93 @@ if (!conversationId) {
   localStorage.setItem("conversation_id", conversationId);
 }
 
+function addMessage(message, sender) {
+  const div = document.createElement("div");
+
+  div.className =
+    sender === "user"
+      ? "message user-message"
+      : "message assistant-message";
+
+  div.textContent = message;
+
+  messagesContainer.appendChild(div);
+}
+
+async function sendMessage(message) {
+  const response = await fetch("/api/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      conversation_id: conversationId,
+      sender: "user",
+      message: message
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    console.error("Erreur API :", data);
+    throw new Error("Erreur lors de l'enregistrement");
+  }
+
+  console.log("Message enregistré :", data);
+}
+
 async function loadMessages() {
   try {
     const response = await fetch(
       `/api/messages?conversation_id=${encodeURIComponent(conversationId)}`
     );
 
-    if (!response.ok) return;
+    if (!response.ok) {
+      console.error("Erreur chargement :", await response.text());
+      return;
+    }
 
     const messages = await response.json();
 
-    chat.innerHTML = "";
+    messagesContainer.innerHTML = "";
 
-    messages.forEach((msg) => {
-      addMessage(msg.message, msg.sender);
+    if (messages.length > 0) {
+      welcome.style.display = "none";
+    } else {
+      welcome.style.display = "block";
+    }
+
+    messages.forEach((message) => {
+      addMessage(message.message, message.sender);
     });
 
-    chat.scrollTop = chat.scrollHeight;
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
   } catch (error) {
-    console.error(error);
+    console.error("Erreur chargement :", error);
   }
 }
 
-function addMessage(message, sender) {
-  const div = document.createElement("div");
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-  div.className =
-    sender === "user"
-      ? "message user"
-      : "message assistant";
-
-  div.textContent = message;
-
-  chat.appendChild(div);
-}
-
-async function sendMessage() {
   const message = input.value.trim();
 
   if (!message) return;
 
   input.value = "";
 
+  welcome.style.display = "none";
+
   addMessage(message, "user");
-  chat.scrollTop = chat.scrollHeight;
+
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
   try {
-    await fetch("/api/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        conversation_id: conversationId,
-        sender: "user",
-        message
-      })
-    });
+    await sendMessage(message);
   } catch (error) {
     console.error(error);
-  }
-}
-
-sendButton.addEventListener("click", sendMessage);
-
-input.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") {
-    sendMessage();
   }
 });
 
