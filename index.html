@@ -14,71 +14,106 @@
 
   <div class="app">
 
-    <!-- BARRE DU HAUT -->
-    <header class="topbar">
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
 
-      <div class="top-logo">
-        <img src="./logo.png" alt="Logo">
-        <span>Mon IA</span>
+    <aside class="sidebar">
+
+      <button id="new-chat" class="new-chat">
+        ＋ Recommencer
+      </button>
+
+      <div class="history-title">
+        HISTORIQUE
       </div>
 
-      <div class="status">
-        <span class="status-dot"></span>
-        En ligne
-      </div>
+      <div id="history" class="history"></div>
 
-    </header>
+    </aside>
 
 
-    <!-- ZONE PRINCIPALE -->
-    <main class="chat">
+    <!-- =========================
+         PARTIE PRINCIPALE
+    ========================== -->
 
-      <!-- ACCUEIL -->
-      <div class="welcome" id="welcome">
+    <div class="main">
 
-        <img
-          class="welcome-logo"
-          src="./logo.png"
-          alt="Mon IA"
-        >
+      <!-- BARRE DU HAUT -->
 
-        <h1>Mon IA</h1>
+      <header class="topbar">
 
-        <p>
-          Comment puis-je vous aider ?
-        </p>
+        <div class="top-logo">
+          <img src="./logo.png" alt="Logo">
+          <span>Mon IA</span>
+        </div>
 
-        <div class="welcome-line"></div>
+        <div class="status">
+          <span class="status-dot"></span>
+          En ligne
+        </div>
 
-      </div>
-
-
-      <!-- MESSAGES -->
-      <div id="messages"></div>
-
-    </main>
+      </header>
 
 
-    <!-- ZONE D'ÉCRITURE -->
-    <form id="chat-form" class="input-area">
+      <!-- CHAT -->
 
-      <div class="input-box">
+      <main class="chat">
 
-        <input
-          id="message-input"
-          type="text"
-          placeholder="Écrivez votre message..."
-          autocomplete="off"
-          required
-        >
+        <!-- ÉCRAN D'ACCUEIL -->
 
-        <button type="submit" class="send-button">
-          ➤
-        </button>
+        <div class="welcome" id="welcome">
 
-      </div>
+          <img
+            class="welcome-logo"
+            src="./logo.png"
+            alt="Mon IA"
+          >
 
-    </form>
+          <h1>Mon IA</h1>
+
+          <p>
+            Comment puis-je vous aider ?
+          </p>
+
+          <div class="welcome-line"></div>
+
+        </div>
+
+
+        <!-- MESSAGES -->
+
+        <div id="messages"></div>
+
+      </main>
+
+
+      <!-- ZONE D'ÉCRITURE -->
+
+      <form id="chat-form" class="input-area">
+
+        <div class="input-box">
+
+          <input
+            id="message-input"
+            type="text"
+            placeholder="Écrivez votre message..."
+            autocomplete="off"
+            required
+          >
+
+          <button
+            type="submit"
+            class="send-button"
+          >
+            ➤
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
 
   </div>
 
